@@ -56,8 +56,8 @@ class Article implements Area{
 
 class Space implements GetObj {
     protected isNull: boolean = true;
-    protected objs: Article[] = []; // objs özelliği burada başlatıldı.
-    protected capacity: number = Infinity; // inf yerine Infinity kullanıyoruz.
+    protected objs: Article[] = []; 
+    protected capacity: number = Infinity; 
     protected fullsCap: number = 0;
 
     constructor() {}
@@ -69,7 +69,7 @@ class Space implements GetObj {
     public getObj(obj: Article): string {
         if (this.IsNull) {
             if (obj.area() < this.capacity) {
-                this.objs.push(obj); // objs başlatıldığı için artık push edilebilir.
+                this.objs.push(obj);
                 this.fullsCap += obj.area();
                 if (this.fullsCap >= this.capacity) {
                     this.isNull = false;
@@ -107,7 +107,7 @@ export class Decoder {
         }
 
         if (isImmutable) {
-            binary = "1" + binary; // Immutable ise başına '1' ekle
+            binary = "1" + binary; 
         }
 
         const memoryArray: memory[] = binary.split("").map((bit) => parseInt(bit) as memory);
@@ -301,21 +301,41 @@ class Hand implements Get, Give {
     public get(obj: Article,IsTHO:boolean=false): string {
         if (this.isNull == true) {
             if(IsTHO){
-                if(obj.Height > 200 && obj.Lenght > 50 && obj.Width > 50 && obj.Weight > this.strong){
-                    return `iki elle bile ${obj} taşıyamazsın`
+                if(obj.Height == undefined && obj.Lenght == undefined && obj.Width == undefined){
+                    if(obj.Weight > this.Strong*2){
+                        return `bu ${obj.Name} objesini taşıyamazsın`
+                    }else{
+                        this.isNull = false;
+                        this._inTheObject = obj;
+                        return `${obj.Name} objesi ellerinde `
+                    }
                 }else{
-                    this.isNull = false;
-                    this._inTheObject = obj;
-                    return `${obj} objesi ellerinde `
+                    if(obj.Height > 200 && obj.Lenght > 50 && obj.Width > 50 && obj.Weight > this.strong*2){
+                        return `iki elle bile ${obj.Name} taşıyamazsın`
+                    }else{
+                        this.isNull = false;
+                        this._inTheObject = obj;
+                        return `${obj.Name} objesi ellerinde `
+                    }
                 }
             }else{
-                if(obj.Weight < this.Strong && obj.Height < 180) { // matematik lazım mesela : height * weight
-                    this.isNull = false;
-                    this._inTheObject = obj;
-                    return `bu ${obj} objesini aldın.`
-                }
-                else {
-                    return `bu ${obj} objesini taşıyamazsın`
+                if(obj.Height == undefined && obj.Lenght == undefined && obj.Width == undefined){
+                    if(obj.Weight > this.Strong){
+                        return `bu ${obj.Name} objesini taşıyamazsın`
+                    }else{
+                        this.isNull = false;
+                        this._inTheObject = obj;
+                        return `bu ${obj.Name} objesini aldın.`
+                    }
+                }else{
+                    if(obj.Weight < this.strong && obj.Height < 180) { // matematik lazım mesela : height * weight
+                        this.isNull = false;
+                        this._inTheObject = obj;
+                        return `bu ${obj.Name} objesini aldın.`
+                    }
+                    else {
+                        return `bu ${obj.Name} objesini taşıyamazsın`
+                    }
                 }
             }
         } else {
@@ -336,7 +356,7 @@ class Hand implements Get, Give {
                 }
             } else {
                 this.isNull = false;
-                return `${obj} yere düştü.`;
+                return `${obj.Name} yere düştü.`;
             }
         } else {
             return "Elinde bir şey yok.";
