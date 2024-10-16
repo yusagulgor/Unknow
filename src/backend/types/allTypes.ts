@@ -1,6 +1,6 @@
 // ? All Types
 
-import {Hand,Article,Space, Brain, Food, Beverage} from "../fal"
+import {Hand,Article,Space, Brain, Food, Beverage, BinBrain} from "../fal"
 
 import { Doctor, 
     Engineer, 
@@ -9,9 +9,19 @@ import { Doctor,
     Student, 
     Teacher } from "../people";
 
+// ? Binary Types     
+
 export type memory = 0|1;
 export type allMem = memory | memory[];
-export type BrainCells = { [key: string]: allMem };
+export type BinBrainCells = { [key: string]: allMem };
+
+// ? Normaly Brain Types
+
+export type bcv = string | number
+export type BrainCells =  { [key: string]: bcv };
+
+export type hands = "right" | "left" | "allHands"
+
 interface OwnMemoryFuncs {
 
     add(val:memory|memory[]):string;
@@ -105,79 +115,41 @@ interface WorkerT {
 
 type DocBranchs = "Brain" | "Internal"
 interface DoctorT extends WorkerT{
+
 }
 
 interface ManagerT extends WorkerT{
+
 }
 
 type TeacherDepartment = "Math" | "Computer" | "Science" | "History" | "Biyology";
 interface TeacherT extends WorkerT{
+
 }
 
 type EngineerDepartment = "Computer" | "Machine" | "Electronics" | "Biochemistry" ;
 interface EngineerT extends WorkerT{
+
 }
-
-
 
 type Gender = "male" | "female" ;
 type Jobs =  null | "Student" | "Entrepreneur" | "Worker" | "Manager" | "Teacher" | "Doctor" | "Engineer";
 type Age = Rangee<0,91>;
-type Weight = Rangee<0,120>;
+type Weight = Rangee<0,121>;
+type Strength = Rangee<20,41>;
 type Height = Rangee<155,211>;
-type PeopleWeight = Rangee<40,120>;
+type PeopleWeight = Rangee<40,121>;
 type HungPoint = Rangee<0,101>;
 
 interface PersonT{
     Info(): string;
-    getObject(obj:Article,whand:Hand):string;
-    giveObject(obj:Article,where:Space|Hand,whand:Hand):string;
+    getObject(obj:Article,whand:hands):string;
+    giveObject(obj:Article,where:Space|Hand,whand:hands):string;
     IsHandFull(left:boolean,right:boolean):string|undefined;
-    eat(food:Food,whand:Hand):string;
+    eat(food:Food,whand:hands):string;
     drink(beverage:Beverage):string;
 }
 
-abstract class PersonC extends Article implements PersonT{
-
-    protected abstract brain:Brain;
-    protected abstract name: string;
-    protected abstract age: Age;
-    protected abstract gender: Gender;
-    protected abstract job: Jobs;
-    protected abstract leftHand: Hand;
-    protected abstract rightHand: Hand;
-    protected abstract AllhandIsFull: boolean;
-
-    abstract IsHandFull(left:boolean,right:boolean):string|undefined;
-    abstract getObject(obj:Article,whand:Hand):string;
-    abstract giveObject(obj:Article,where:Space|Hand,whand:Hand):string;
-
-    abstract eat(food: Food,wHand:Hand): string;
-    abstract drink(beverage:Beverage): string;
-
-    abstract area(): number;
-    abstract Info(): string ;
-} 
-
-abstract class CubicArea extends Space implements GetObj{
-    protected abstract isNull: boolean;
-    protected abstract objs: Article[];
-    protected abstract capacity: number;
-    protected abstract fullsCap: number;
-
-    abstract get GetArts(): Article[];
-    abstract getObj(obj: Article):string;
-}
-
-abstract class Room extends CubicArea {
-    protected abstract isNull: boolean;
-    protected abstract objs: Article[];
-    protected abstract capacity: number;
-    protected abstract fullsCap: number;
-
-    abstract get GetArts(): Article[];
-    abstract getObj(obj: Article):string;
-}
 
 // ? For General
 export{
@@ -200,11 +172,11 @@ export{
     Height,
     PeopleWeight,
     HungPoint,
+    Strength
 }
 
 // ? For People
 export{
-    PersonC,
     PersonT,
     WorkerT,
     StudentT,

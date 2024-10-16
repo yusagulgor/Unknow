@@ -10,13 +10,18 @@ The project is still under heavy development, and many features are missing or i
 
 ---
 
+TODO: 
+log code/test
+
+log the data for the ai training
+
 ## How to Use
 
 Currently, the project is **not ready** for external use. However, if you'd like to experiment with it or contribute, you can follow the instructions below to run the code locally.
 
 ### Installation
 
-(! I guess it doesn't work)
+(! I guess it doesn't work,because ".json"s )
 
 1. Install the required Node.js dependencies:
    ```bash

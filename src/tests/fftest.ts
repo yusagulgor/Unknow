@@ -6,12 +6,13 @@ let space = new Space();
 
 // ? Person 
 
-let doctor = new Doctor("ali",24,85,180,"male","Brain","Gulgor");
+let doctor = new Doctor("ali",24,85,180,39,"male","Brain","Gulgor");
 
 // console.log(a.BrainValues);
 print("Person: " + doctor)
 console.log(doctor.Info());
-print(doctor.CompanyName) // Gulgor 
+print(doctor.CompanyName) // Gulgor
+// console.log(doctor.Branch) 
 print(doctor.Branch) // Brain
 print(doctor.CompanyType) // Hospital
 print(doctor.IsAllHandFull) // false
@@ -56,10 +57,12 @@ print(apple.Name)// name
 
 print(apple.forWhoEat("human")) // true
 
-print(doctor.getObject(apple,doctor.LeftHand))
+print(doctor.getObject(apple,"left"))
 print(doctor.IsHandFull(true))
+print(doctor.whatITheHand(true))
 
 // print(doctor.giveObject(doctor.LeftHand.inTheObject,space,))
 
 // print(doctor.getObject(apple,doctor.LeftHand));
 // print(doctor.IsAllHandFull)
+

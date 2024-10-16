@@ -3,6 +3,7 @@
 
 // TODO: MEMORYS like logging objects .  And remember type 
 
+import { Person } from "./people";
 import {
     Area,
     Get,
@@ -11,12 +12,19 @@ import {
     allMem,
     memory,
     Weight,
-    BrainCells,
+    BinBrainCells,
     HungPoint,
     ArguBeverage,
     ArguFood,
     fhe,
     fhd,
+    Age,
+    Gender,
+    Jobs,
+    PersonT,
+    BrainCells,
+    bcv,
+    hands,
     } from "./types/allTypes";
 
 class Article implements Area{
@@ -74,7 +82,7 @@ class Space implements GetObj {
                 if (this.fullsCap >= this.capacity) {
                     this.isNull = false;
                 }
-                return `${obj} added`;
+                return `${obj.Name} added`;
             } else {
                 return "Alan dolu";
             }
@@ -86,6 +94,48 @@ class Space implements GetObj {
     public get getArts(): Article[] {
         return this.objs;
     }
+}
+
+abstract class PersonC extends Article implements PersonT{
+
+    protected abstract binbrain:BinBrain;
+    protected abstract name: string;
+    protected abstract age: Age;
+    protected abstract gender: Gender;
+    protected abstract job: Jobs;
+    protected abstract leftHand: Hand;
+    protected abstract rightHand: Hand;
+    protected abstract AllhandIsFull: boolean;
+
+    abstract IsHandFull(left:boolean,right:boolean):string|undefined;
+    abstract getObject(obj:Article,whand:hands):string;
+    abstract giveObject(obj:Article,where:Space|Hand,whand:hands):string;
+
+    abstract eat(food: Food,wHand:hands): string;
+    abstract drink(beverage:Beverage): string;
+
+    abstract area(): number;
+    abstract Info(): string ;
+} 
+
+abstract class CubicArea extends Space implements GetObj{
+    protected abstract isNull: boolean;
+    protected abstract objs: Article[];
+    protected abstract capacity: number;
+    protected abstract fullsCap: number;
+
+    abstract get GetArts(): Article[];
+    abstract getObj(obj: Article):string;
+}
+
+abstract class Room extends CubicArea {
+    protected abstract isNull: boolean;
+    protected abstract objs: Article[];
+    protected abstract capacity: number;
+    protected abstract fullsCap: number;
+
+    abstract get GetArts(): Article[];
+    abstract getObj(obj: Article):string;
 }
 
 export class Decoder {
@@ -136,19 +186,24 @@ export class Decoder {
     }
 }
 
-export class Brain {
-    private memorys: BrainCells;
+export class BinBrain {
+    private memorys: BinBrainCells;
 
     constructor() {
         this.memorys = {};
     }
 
     public add(key: string, val: allMem): string {
-        this.memorys[key] = val;
-        return "memory added";
+        
+        if(key in this.memorys) {
+            return "memory already exists";
+        }else {
+            this.memorys[key] = val;
+            return "memory added";
+        }
     }
 
-    public get MemoryValues(): BrainCells {
+    public get MemoryValues(): BinBrainCells {
         return this.memorys;
     }
 
@@ -222,6 +277,77 @@ export class Brain {
     }
 }
 
+export class Brain {
+    private memorys: BrainCells;
+
+    constructor() {
+        this.memorys = {};
+    }
+
+    public addMemory(key: string, value: bcv): string {
+        if (this.memorys[key]) {
+            return `Memory for key "${key}" already exists`;
+        }
+        this.memorys[key] = value;
+        return `Memory for key "${key}" added`;
+    }
+
+    public getMemory(key: string): bcv | undefined {
+        return this.memorys[key];
+    }
+
+    public get allMemories(): BrainCells {
+        return this.memorys;
+    }
+
+    public get allKeys(): string[] {
+        return Object.keys(this.memorys);
+    }
+
+    public get memoryCount(): number {
+        return Object.keys(this.memorys).length;
+    }
+
+    public updateMemoryByKey(key: string, newVal: bcv): string {
+        if (!(key in this.memorys)) {
+            return `No memory found for key "${key}"`;
+        }
+
+        if (JSON.stringify(this.memorys[key]) === JSON.stringify(newVal)) {
+            return "New value is the same as the old value";
+        }
+
+        this.memorys[key] = newVal;
+        return `Memory for key "${key}" updated`;
+    }
+
+    public updateMemoryByIndex(index: number, newVal: bcv): string {
+        const keys = Object.keys(this.memorys);
+        
+        if (index < 0 || index >= keys.length) {
+            throw new Error("Index out of bounds. The index cannot be bigger than the memory length.");
+        }
+
+        const key = keys[index];
+
+        if (JSON.stringify(this.memorys[key]) === JSON.stringify(newVal)) {
+            return "New value is the same as the old value";
+        }
+
+        this.memorys[key] = newVal;
+        return `Memory for key "${key}" updated`;
+    }
+
+    public deleteMemory(key: string): string {
+        if (!(key in this.memorys)) {
+            return `No memory found for key "${key}"`;
+        }
+        delete this.memorys[key];
+        return `Memory for key "${key}" deleted`;
+    }
+}
+
+
 
 class Food extends Article {
     protected neliefPoint: HungPoint;
@@ -279,6 +405,8 @@ class Foots{
 
 }
 
+// TODO : Ya sıra ekliceksin ya da başka bişi.
+
 class Hand implements Get, Give {
     private name:string;
     private strong: number;
@@ -296,7 +424,8 @@ class Hand implements Get, Give {
     public get Name() : string {
         return this.name;
     }
-    
+
+    // public eat(food:Food):string{}
 
     public get(obj: Article,IsTHO:boolean=false): string {
         if (this.isNull == true) {
@@ -378,10 +507,71 @@ class Hand implements Get, Give {
 
 }
 
+class Family {
+    private father: Person | null;
+    private mother: Person | null;
+    private children: Person[];
+
+    constructor(father: Person | null = null, mother: Person | null = null, children: Person[] = []) {
+        if (father && father.Gender !== "male") {
+            throw new Error("Babanın cinsiyeti 'male' olmalıdır.");
+        }
+        if (mother && mother.Gender !== "female") {
+            throw new Error("Annenin cinsiyeti 'female' olmalıdır.");
+        }
+
+        this.father = father;
+        this.mother = mother;
+        this.children = children;
+    }
+
+    public addFather(father: Person): void {
+        if (father.Gender !== "male") {
+            throw new Error("Babanın cinsiyeti 'male' olmalıdır.");
+        }
+
+        if (this.father == null) {
+            this.father = father;
+        } else {
+            console.log("Baba zaten var!");
+        }
+    }
+
+    public addMother(mother: Person): void {
+        if (mother.Gender !== "female") {
+            throw new Error("Annenin cinsiyeti 'female' olmalıdır.");
+        }
+
+        if (this.mother == null) {
+            this.mother = mother;
+        } else {
+            console.log("Anne zaten var!");
+        }
+    }
+
+    public addChild(child: Person): void {
+        this.children.push(child);
+    }
+
+    public removeChild(child: Person): void {
+        this.children = this.children.filter(c => c !== child);
+    }
+
+    public getFamilyInfo(): string {
+        let info = "Aile Bilgileri:\n";
+        info += this.father ? `Baba: ${this.father.Info()}\n` : "Baba yok.\n";
+        info += this.mother ? `Anne: ${this.mother.Info()}\n` : "Anne yok.\n";
+        info += this.children.length > 0 ? `Çocuklar:\n${this.children.map(c => c.Info()).join("\n")}` : "Çocuk yok.\n";
+        return info;
+    }
+}
+
 export{
     Article,
     Space,
     Food,
     Beverage,
     Hand,
+    PersonC,
+    Family
 }
