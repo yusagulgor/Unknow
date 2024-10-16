@@ -10,10 +10,13 @@ The project is still under heavy development, and many features are missing or i
 
 ---
 
-TODO: 
-log code/test
+## TODO
 
-log the data for the ai training
+- [ ] Log code/test results  
+  * Test süreçlerini düzenlemek ve gerekli log kodunu yazma.
+  
+- [ ] Log the data for AI training  
+  * Yapay zeka eğitimi için gereken veriler.
 
 ## How to Use
 
