@@ -6,8 +6,6 @@
 import { Person } from "./people";
 import {
     Area,
-    Get,
-    Give,
     GetObj,
     allMem,
     memory,
@@ -25,16 +23,18 @@ import {
     BrainCells,
     bcv,
     hands,
+    stomachT,
+    cm,
     } from "./types/allTypes";
 
 class Article implements Area{
     protected name?:string;
     protected weight?: Weight; // gr
-    protected height?: number; // cm
-    protected width?: number;  // cm
-    protected lenght?: number; // cm
+    protected height?: cm; // cm
+    protected width?: cm;  // cm
+    protected lenght?: cm; // cm
 
-    constructor(name?:string,weight?:Weight,w?: number, h?: number,l?: number) {
+    constructor(name?:string,weight?:Weight,w?: cm, h?: cm,l?: cm) {
         this.name = name;
         this.weight = weight;
         if (w != null && w < 0 || h != null && h < 0 || l != null && l < 0 ) {
@@ -65,7 +65,7 @@ class Article implements Area{
 class Space implements GetObj {
     protected isNull: boolean = true;
     protected objs: Article[] = []; 
-    protected capacity: number = Infinity; 
+    protected capacity: number = 999999; 
     protected fullsCap: number = 0;
 
     constructor() {}
@@ -82,7 +82,7 @@ class Space implements GetObj {
                 if (this.fullsCap >= this.capacity) {
                     this.isNull = false;
                 }
-                return `${obj.Name} added`;
+                return `${obj.Name} added on the ${this.constructor.name}`;
             } else {
                 return "Alan dolu";
             }
@@ -96,27 +96,9 @@ class Space implements GetObj {
     }
 }
 
-abstract class PersonC extends Article implements PersonT{
-
-    protected abstract binbrain:BinBrain;
-    protected abstract name: string;
-    protected abstract age: Age;
-    protected abstract gender: Gender;
-    protected abstract job: Jobs;
-    protected abstract leftHand: Hand;
-    protected abstract rightHand: Hand;
-    protected abstract AllhandIsFull: boolean;
-
-    abstract IsHandFull(left:boolean,right:boolean):string|undefined;
-    abstract getObject(obj:Article,whand:hands):string;
-    abstract giveObject(obj:Article,where:Space|Hand,whand:hands):string;
-
-    abstract eat(food: Food,wHand:hands): string;
-    abstract drink(beverage:Beverage): string;
-
-    abstract area(): number;
-    abstract Info(): string ;
-} 
+function yoket(a:any):void{
+    a = null;
+}
 
 abstract class CubicArea extends Space implements GetObj{
     protected abstract isNull: boolean;
@@ -347,14 +329,37 @@ export class Brain {
     }
 }
 
+export abstract class PersonC extends Article implements PersonT{
+    
+    protected abstract binbrain:BinBrain;
+    protected abstract name: string;
+    protected abstract age: Age;
+    protected abstract gender: Gender;
+    protected abstract job: Jobs;
+    protected abstract leftHand: Hand;
+    protected abstract rightHand: Hand;
+    protected abstract isDead:boolean ;
+    protected abstract stomach:Stomach;
 
+    abstract IsHandFull(left?:boolean,right?:boolean):string|undefined;
+    abstract getObject(obj:Article,whand:hands):string;
+    abstract giveObject(obj:Article,where:Space|Person,whand:hands):string;
+
+    abstract eat(food: Food,wHand:hands): string;
+    abstract drink(beverage:Beverage): string;
+
+    abstract area(): number;
+    abstract Info(): string ;
+
+    abstract get AreBothHandsFull(): boolean ;
+} 
 
 class Food extends Article {
     protected neliefPoint: HungPoint;
     protected argums: ArguFood;
 
-    constructor(name: string, weight: Weight, neliefPoint: HungPoint, argum: ArguFood) {
-        super(name, weight); 
+    constructor(name: string, weight: Weight,width:cm,height:cm,lenght:cm,neliefPoint: HungPoint, argum: ArguFood) {
+        super(name, weight,width,height,lenght); 
         this.neliefPoint = neliefPoint;
         this.argums = argum;
     }  
@@ -370,8 +375,8 @@ class Food extends Article {
             return false;
         }
     }
-}
 
+}
 
 class Beverage extends Article {
     protected neliefPoint: HungPoint;
@@ -407,7 +412,7 @@ class Foots{
 
 // TODO : Ya sıra ekliceksin ya da başka bişi.
 
-class Hand implements Get, Give {
+class Hand{
     private name:string;
     private strong: number;
     private isNull: boolean;
@@ -419,16 +424,13 @@ class Hand implements Get, Give {
         this.isNull = true;
         this._inTheObject = null;
     }
-
     
     public get Name() : string {
         return this.name;
     }
 
-    // public eat(food:Food):string{}
-
     public get(obj: Article,IsTHO:boolean=false): string {
-        if (this.isNull == true) {
+        if (this.isNull) {
             if(IsTHO){
                 if(obj.Height == undefined && obj.Lenght == undefined && obj.Width == undefined){
                     if(obj.Weight > this.Strong*2){
@@ -473,18 +475,54 @@ class Hand implements Get, Give {
     }
         
 
-    public give(obj: Article, _where: Space | Hand): string {
+    public give(obj: Article, _where: Space | PersonC | Stomach): string {
         if (!this.isNull) {
-            if (_where.IsNull) {
+            if (_where != null) {
                 if (_where instanceof Space) {
-                    return _where.getObj(obj);
-                } else if (_where instanceof Hand) {
-                    return "from karşı el:" +_where.get(obj,false);
-                }else{
-                    return "where type is not Space or Hand";
+                    let cek = _where.getObj(obj);
+                    if(cek == obj.Name+" added on the "+_where.constructor.name){
+                        this._inTheObject = null;
+                        this.isNull=true;
+                        return cek;
+                    }else {
+                        return cek;
+                    }
+                } else if (_where instanceof PersonC) {
+                    let target:hands;
+                    let Lcek = _where.IsHandFull(true);
+                    let Rcek = _where.IsHandFull(false,true);
+                    if (Rcek == "Right hand is empty" && Lcek == "Left hand is empty"){target = "allHands"}
+                    else if(Lcek == "Left hand is empty"){target = "left"}
+                    else if(Rcek == "Right hand is empty"){target = "right"}
+                    else{return "all hands are full. From : Person"}
+
+                    let cek = _where.getObject(obj,target)
+                    if(cek ==  `bu ${obj.Name} objesini aldın.`){
+                        this._inTheObject = null;
+                        this.isNull=true;
+                        return "from karşı el:" + cek;   
+                    }else{
+                        return "from karşı el:" + cek;
+                    }
+                     
+                }else if (_where instanceof Stomach){
+                    if(obj instanceof Food){
+                        let cek = _where.get(obj);
+                        if(cek == "eated "+obj.Name){
+                            this._inTheObject = null;
+                            this.isNull=true;
+                            return cek;
+                        }else{
+                            return cek;
+                        }
+                    }else{
+                        return obj.Name+" objesini yediremezsin."
+                    }
+                }else {
+                    return "where type is not Space ,Hand or Stomach";
                 }
             } else {
-                this.isNull = false;
+                this.isNull = true;
                 return `${obj.Name} yere düştü.`;
             }
         } else {
@@ -505,6 +543,28 @@ class Hand implements Get, Give {
         return this.isNull;
     }
 
+}
+
+export class Stomach implements stomachT{
+    private area = 100;
+
+    get(food: Food): string {
+        if(food.area() < this.area){
+            yoket(food);
+            return "eated "+food.Name;
+        }else{
+            return "this is very big for stomach"
+        }
+    }
+
+    private vomit(): string {
+        throw new Error("Method not implemented.");
+    }
+
+    public IsNull(): boolean {
+        return true;
+    }
+    
 }
 
 class Family {
@@ -572,6 +632,5 @@ export{
     Food,
     Beverage,
     Hand,
-    PersonC,
     Family
 }

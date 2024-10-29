@@ -67,4 +67,4 @@ let argumsFFood: ArguFood = {
     },
 }
 
-let apple = new Food("apple", 1, 12, argumsFFood);
+let apple = new Food("apple",1,1,1,1,12,argumsFFood);

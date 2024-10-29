@@ -15,7 +15,7 @@ print(doctor.CompanyName) // Gulgor
 // console.log(doctor.Branch) 
 print(doctor.Branch) // Brain
 print(doctor.CompanyType) // Hospital
-print(doctor.IsAllHandFull) // false
+print(doctor.AreBothHandsFull) // false
 print(doctor.Job) // Doctor
 print(doctor.area()) // nevermind
 print(doctor.IsHandFull())
@@ -44,7 +44,7 @@ let argumsFBeverages: ArguBeverage = {
     },
 }
 
-let apple = new Food("apple", 1, 12, argumsFFood);
+let apple = new Food("apple",1,1,1,1,12,argumsFFood);
 // let appleJuice = new Beverage("appleJuice",argumsFBeverages,8);
 
 print("--------------------------------------------------------")

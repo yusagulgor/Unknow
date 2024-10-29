@@ -10,7 +10,6 @@ import {
     Height,
     BinBrainCells,
     PeopleWeight,
-    // HungPoint
     Age,
     Gender,
     Jobs,
@@ -23,47 +22,59 @@ import {
     hands
  } from './types/allTypes';
 
-import { Hand,Article, BinBrain, Space, Decoder, Food, Beverage , PersonC, Brain } from './fal';
-
-const space = new Space();
+import { Hand,Article, BinBrain, Space, Decoder, Food, Beverage , PersonC, Stomach } from './fal';
 
 class Person extends PersonC {
-
+    protected isDead: boolean = false;
     protected name: string;
     protected age: Age;
     protected leftHand: Hand;
     protected rightHand: Hand;
     protected gender: Gender;
     protected job: Jobs;
-    protected binbrain: BinBrain;
-    // protected brain : Brain;
-    protected companyName: string|undefined = "";
+    protected binbrain: BinBrain = new BinBrain();
+    protected companyName: string | undefined;
+    protected stomach: Stomach = new Stomach();
 
-    protected AllhandIsFull: boolean;
 
-    constructor(name: string, age: Age, weight: PeopleWeight, height: Height,handStrength:Strength,gender: Gender, job: Jobs,companyName?:string) {
+    constructor(
+        name: string,
+        age: Age,
+        weight: PeopleWeight,
+        height: Height,
+        handStrength: Strength,
+        gender: Gender,
+        job: Jobs = null,
+        CompanyName: string | undefined = undefined
+    ) {
         super(name, weight, 10, height, 6);
         this.name = name;
         this.age = age;
         this.job = job;
         this.gender = gender;
+
         if (this.gender == "female") {
-            this.leftHand = new Hand("left", handStrength-10);
-            this.rightHand = new Hand("right", handStrength-10);
+            this.leftHand = new Hand("left", handStrength - 10);
+            this.rightHand = new Hand("right", handStrength - 10);
         } else {
             this.leftHand = new Hand("left", handStrength);
             this.rightHand = new Hand("right", handStrength);
         }
 
-        if(this.job != null && this.companyName != undefined ){
-            this.companyName = companyName
-        }else{
-            throw new Error("Eğer jobun varsa işyeri adı olması lazım.");
+        if (job == null && CompanyName == null) {
+            // İş ve şirket adı yoksa devam
+        } else {
+            if (job != null && CompanyName == null) {
+                throw new Error("İşin varsa şirket ismi olmalı");
+            } else if (job == null && CompanyName != null) {
+                throw new Error("Hangi pozisyonda çalıştığını constructor'da belirt");
+            } else {
+                this.job = job;
+                this.companyName = CompanyName;
+            }
         }
 
-        this.AllhandIsFull = !this.leftHand.IsNull() && !this.rightHand.IsNull();
         this.binbrain = new BinBrain();
-        this.BinInitMemory();
     }
 
     private BinInitMemory(): void {
@@ -88,42 +99,36 @@ class Person extends PersonC {
         
     }
 
+    public nulluk(left:boolean,right:boolean):any{
+        if(left){return this.leftHand.IsNull()}
+        if(right){return this.rightHand.IsNull()}
+        else {return "sa ";};
+    }
+
     
     public get Gender() : string {
         return this.gender; 
     }
     
 
-    // public get LeftHand(): Hand {
-    //     return this.leftHand;
-    // }
+    public get LeftHand(): Hand {
+        return this.leftHand;
+    }
 
-    // public get RightHand(): Hand {
-    //     return this.rightHand;
-    // }
+    public get RightHand(): Hand {
+        return this.rightHand;
+    }
 
     public get BrainValues(): BinBrainCells {
         return this.binbrain.MemoryValues;
     }
 
     public set Weight(newWeight: Weight) {
-        let decodedWeight = Decoder.retToDecode(newWeight);
-        const updateStatus = this.binbrain.updateNameOfValue("Weight", decodedWeight);
-        if (updateStatus === "value is updated") {
-            this.weight = newWeight;
-        } else {
-            throw new Error(updateStatus);
-        }
+        this.weight = newWeight;
     }
 
     public set Age(newAge: Age) {
-        let decodedAge = Decoder.retToDecode(newAge);
-        const updateStatus = this.binbrain.updateNameOfValue("Age", decodedAge);
-        if (updateStatus === "value is updated") {
-            this.age = newAge;
-        } else {
-            throw new Error(updateStatus);
-        }
+        this.age = newAge;
     }
 
     public get Job(): Jobs {
@@ -131,14 +136,15 @@ class Person extends PersonC {
     }
 
     public set Job(newJob: Jobs) {
-        let cek = newJob == null ? 0: newJob;
-        let decodedCompanyName = Decoder.retToDecode(cek);
-        const updateStatus = this.binbrain.updateNameOfValue("CompanyName", decodedCompanyName);
-        if (updateStatus === "value is updated") {
-            this.job = newJob;
-        } else {
-            throw new Error(updateStatus);
-        }
+        this.job = newJob;
+        // let cek = newJob == null ? 0: newJob;
+        // let decodedCompanyName = Decoder.retToDecode(cek);
+        // const updateStatus = this.binbrain.updateNameOfValue("CompanyName", decodedCompanyName);
+        // if (updateStatus === "value is updated") {
+        //     this.job = newJob;
+        // } else {
+        //     throw new Error(updateStatus);
+        // }
     }
 
     public get CompanyName(): string|undefined{
@@ -146,22 +152,24 @@ class Person extends PersonC {
     }
 
     public set CompanyName(newCompanyName: string) {
-        let decodedCompanyName = Decoder.retToDecode(newCompanyName);
-        const updateStatus = this.binbrain.updateNameOfValue("CompanyName", decodedCompanyName);
-        if (updateStatus === "value is updated") {
-            this.companyName = newCompanyName;
-        } else {
-            throw new Error(updateStatus);
-        }
+        this.companyName = newCompanyName;
+        // let decodedCompanyName = Decoder.retToDecode(newCompanyName);
+        // const updateStatus = this.binbrain.updateNameOfValue("CompanyName", decodedCompanyName);
+        // if (updateStatus === "value is updated") {
+        //     this.companyName = newCompanyName;
+        // } else {
+        //     throw new Error(updateStatus);
+        // }
     }
 
-    public get IsAllHandFull(): boolean {
-        return this.AllhandIsFull;
+    public get AreBothHandsFull(): boolean {
+        return !this.leftHand.IsNull() && !this.rightHand.IsNull();
     }
+    
 
     public IsHandFull(left: boolean = false, right: boolean = false): string {
-        if (!right && !left) {
-            return this.AllhandIsFull ? "All hands are full" : "Not all hands are full";
+        if (left && right) {
+            return this.AreBothHandsFull ? "All hands are full" : "Not all hands are full";
         }
         if (left) {
             return this.leftHand.IsNull() ? "Left hand is empty" : "Left hand is not empty";
@@ -169,12 +177,12 @@ class Person extends PersonC {
         if (right) {
             return this.rightHand.IsNull() ? "Right hand is empty" : "Right hand is not empty";
         }
-        return "Invalid hand selection";
+        return "Invalid hand selection / ikisi de false olamaz";
     }
 
     public whatITheHand(left: boolean = false, right: boolean = false): string {
         if (!right && !left) {
-            return this.AllhandIsFull ? "All hands are full" : "not: all hands are not full";
+            return this.AreBothHandsFull ? "All hands are full" : "not: all hands are not full";
         }
         if (left) {
             return this.leftHand.IsNull() ? "Left hand is empty" : this.leftHand.inTheObject?.Name +" in the left Hand";
@@ -203,9 +211,6 @@ class Person extends PersonC {
         const rightResult = this.rightHand.get(object, true);
         
         if (leftResult === rightResult) {
-            this.binbrain.updateNameOfValue("leftHand", Decoder.retToDecode(object.Name));
-            this.binbrain.updateNameOfValue("rightHand", Decoder.retToDecode(object.Name));
-            this.AllhandIsFull = true;
             return leftResult;
         } else {
             return rightResult;
@@ -213,19 +218,15 @@ class Person extends PersonC {
     }
 
     public getObject(object: Article, hand:hands): string {
-        let cek = this.setHand(hand);
-        if(cek == "all"){
+        let selectedHand = this.setHand(hand);
+        if(selectedHand == "all"){
             return this.getWithBothHands(object)
-        }else if(cek instanceof Hand){
-            const result = cek.get(object);
-        
+        }else if(selectedHand instanceof Hand){
+            const result = selectedHand.get(object);
             if (result === `bu ${object.Name} objesini taşıyamazsın`) {
                 return `bu ${object.Name} objesini taşıyamazsın`; 
             } else {
-                let decodedObject = Decoder.retToDecode(object.Name);
-                this.binbrain.updateNameOfValue(cek.Name + "Hand", decodedObject);
-                this.AllhandIsFull = !this.leftHand.IsNull() && !this.rightHand.IsNull();
-                return result;
+                return result ;
             }
         }else{
             return "unknown error in the get func"
@@ -233,14 +234,11 @@ class Person extends PersonC {
         
     }
 
-    private giveWithBothHands(object: Article,where:Space|Hand): string {
+    private giveWithBothHands(object: Article,where:Space|Person): string {
         const leftResult = this.leftHand.give(object,where);
         const rightResult = this.rightHand.give(object,where);
 
         if (leftResult === rightResult) {
-            this.binbrain.updateNameOfValue("leftHand", Decoder.retToDecode("boş"));
-            this.binbrain.updateNameOfValue("rightHand", Decoder.retToDecode("boş"));
-            this.AllhandIsFull = false;
             return leftResult;
         } else {
             return rightResult;
@@ -248,17 +246,12 @@ class Person extends PersonC {
 
     }
 
-    public giveObject(object: Article, where: Space | Hand, hand:hands): string {
+    public giveObject(object: Article, where: Space | Person, hand:hands): string {
         let cek= this.setHand(hand);
         if(cek == "all"){
             return this.giveWithBothHands(object,where)
         }else if(cek instanceof Hand){
             const result = cek.give(object, where);
-            if (result === `${object.Name} added` || result === `bu ${object.Name} objesini aldın.`) {
-                cek.give(object, where);
-                this.binbrain.updateNameOfValue("rightHand", Decoder.retToDecode("boş"));
-                return result;
-            }
             return result;
         }else{
             return "unknown error in the give func"
@@ -270,8 +263,7 @@ class Person extends PersonC {
         let cek = this.setHand(whand);
         if(cek instanceof Hand){
             if (food.forWhoEat("human") && food == cek.inTheObject && !cek.IsNull()){
-                cek.give(food,space)
-                return food.Name + " eated";
+                return cek.give(food,this.stomach);
             }else{
                 if (food != cek.inTheObject) {
                     return "yemek elin içinde değil";
@@ -295,11 +287,13 @@ class Person extends PersonC {
     }
 
     public Info(): string {
-        return `Name: ${this.name}, Age: ${this.age}, Job: ${this.job}, Gender: ${this.gender}`;
+        let cek = this.job==null ? "yok" : this.job; 
+        return `Name: ${this.name}, Age: ${this.age}, Job: ${cek}, Gender: ${this.gender} ,Hands is are full: ${this.AreBothHandsFull}`;
     }
 }
 
 class Doctor extends Person implements DoctorT {
+    protected isDead: boolean = false;
     private branch: DocBranchs;
     private readonly companyType: CompanyType = "Hospital";
 
@@ -320,6 +314,7 @@ class Doctor extends Person implements DoctorT {
 }
 
 class Engineer extends Person implements EngineerT {
+    protected isDead: boolean = false;
 
     private department: EngineerDepartment;
     private readonly companyType: CompanyType = "Technology";
@@ -342,9 +337,10 @@ class Engineer extends Person implements EngineerT {
 }
 
 class Student extends Person implements StudentT {
-    // private schoolName: string;
-    // private degree: Degree;
-    // private type: SchoolType;
+    // protected isDead: boolean = false;
+    // // private schoolName: string;
+    // // private degree: Degree;
+    // // private type: SchoolType;
 
     constructor(name: string, age: Age, weight: PeopleWeight, height: Height,handStrength:Strength,gender: Gender) {
         super(name, age, weight, height,handStrength,gender, "Student");
@@ -386,6 +382,7 @@ class Student extends Person implements StudentT {
 }
 
 class Teacher extends Person implements TeacherT {
+    protected isDead: boolean = false;
     private department: TeacherDepartment;
     private readonly companyType: CompanyType = "School";
 
@@ -395,7 +392,6 @@ class Teacher extends Person implements TeacherT {
         this.age = age;
         this.gender = gender;
         this.job = "Teacher";
-        this.AllhandIsFull = !this.leftHand.IsNull() && !this.rightHand.IsNull();
         this.department = department;
         this.companyName = companyName;
     }
@@ -406,6 +402,7 @@ class Teacher extends Person implements TeacherT {
 }
 
 class Manager extends Person implements ManagerT {
+    protected isDead: boolean = false;
 
     private readonly companyType: CompanyType;
 

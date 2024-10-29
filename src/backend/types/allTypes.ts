@@ -1,6 +1,6 @@
 // ? All Types
 
-import {Hand,Article,Space, Brain, Food, Beverage, BinBrain} from "../fal"
+import {Hand,Article,Space, Brain, Food, Beverage, BinBrain, Stomach} from "../fal"
 
 import { Doctor, 
     Engineer, 
@@ -63,16 +63,20 @@ type ArguBeverage = {
     };
 }
 
-interface Get{
-    get(obj:Article,IsTHO?:boolean): any;
+export interface stomachT{
+    get(food:Food):string;
 }
 
-interface Give{
-    give(obj:Article,where:Space): any;
-}
+type Enumerate<N extends number, Acc extends number[] = []> = 
+  Acc["length"] extends N 
+    ? Acc[number] 
+    : Acc["length"] extends 1000 
+      ? never 
+      : Enumerate<N, [...Acc, Acc['length']]>;
 
-type Enumerate<N extends number,Acc extends number[] = []> = Acc["length"] extends N ? Acc[number]: Enumerate<N,[...Acc , Acc['length']]>;
-type Rangee<F extends number,T extends number> = Exclude<Enumerate<T>,Enumerate<F>>;
+type Rangee<F extends number, T extends number> = Exclude<Enumerate<T>, Enumerate<F>>;
+export type cm = Rangee<0, 999>;
+
 type Degree = Rangee<1,5>;
 type Exp = Rangee<1,36>;
 
@@ -133,7 +137,7 @@ interface EngineerT extends WorkerT{
 }
 
 type Gender = "male" | "female" ;
-type Jobs =  null | "Student" | "Entrepreneur" | "Worker" | "Manager" | "Teacher" | "Doctor" | "Engineer";
+type Jobs =  null | "Student" | "Entrepreneur" | "Worker" | "Manager" | "Teacher" | "Doctor" | "Engineer" | "Waiter" | "Cashier";
 type Age = Rangee<0,91>;
 type Weight = Rangee<0,121>;
 type Strength = Rangee<20,41>;
@@ -141,10 +145,11 @@ type Height = Rangee<155,211>;
 type PeopleWeight = Rangee<40,121>;
 type HungPoint = Rangee<0,101>;
 
+
 interface PersonT{
     Info(): string;
     getObject(obj:Article,whand:hands):string;
-    giveObject(obj:Article,where:Space|Hand,whand:hands):string;
+    giveObject(obj:Article,where:Space|Person|Stomach,whand:hands):string;
     IsHandFull(left:boolean,right:boolean):string|undefined;
     eat(food:Food,whand:hands):string;
     drink(beverage:Beverage):string;
@@ -156,8 +161,6 @@ export{
     Area,
     fhe,
     fhd,
-    Get,
-    Give,
     GetObj,
     Rangee,
     Degree,
