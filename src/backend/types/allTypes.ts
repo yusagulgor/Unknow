@@ -9,6 +9,10 @@ import { Doctor,
     Student, 
     Teacher } from "../people";
 
+export let throwError = (errorMsg: string): never => {throw new Error(errorMsg);};     
+export let OneLineCheck = (control:boolean,ret:string)=>{if(control) return ret};
+
+console.log(OneLineCheck("lale" =="lale","true"))
 // ? Binary Types     
 
 export type memory = 0|1;

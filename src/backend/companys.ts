@@ -1,4 +1,4 @@
-import { CompanyT, HospitalT, SchoolT, SmallBusinessEx, SmallBusinessT, TechnologyT } from "./types/allTypes";
+import { CompanyT, HospitalT, SchoolT, SmallBusinessEx, SmallBusinessT, TechnologyT, throwError } from "./types/allTypes";
 import { Doctor, Engineer, Manager, Person, Student, Teacher } from "./people";
 
 // ? Companys classes
@@ -19,7 +19,7 @@ class Company extends CompanyC {
         super();
         this.name = name;
         if (manager.CompanyType !== this.constructor.name) {
-            throw new Error("Company type must be manager bla bla");
+            throwError("Company type must be manager bla bla")
         }
         this.manager = manager;
         this.workers = [];

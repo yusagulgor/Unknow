@@ -24,32 +24,35 @@ import {
     bcv,
     hands,
     stomachT,
-    cm,
+    throwError
     } from "./types/allTypes";
 
 class Article implements Area{
     protected name?:string;
     protected weight?: Weight; // gr
-    protected height?: cm; // cm
-    protected width?: cm;  // cm
-    protected lenght?: cm; // cm
+    protected height?: number; // cm
+    protected width?: number;  // cm
+    protected lenght?: number; // cm
+    protected durability:number;
 
-    constructor(name?:string,weight?:Weight,w?: cm, h?: cm,l?: cm) {
+    constructor(dura:number,name?:string,weight?:Weight,w?: number, h?: number,l?: number ) {
         this.name = name;
         this.weight = weight;
+        this.durability = dura
         if (w != null && w < 0 || h != null && h < 0 || l != null && l < 0 ) {
-            throw new Error("w , h and l must be greater than zero");
+            throwError("w , h and l must be greater than zero")
         }
         this.width = w;
         this.height = h;
         this.lenght = l;
     }
 
-    public get Name():string {return this.name!;}
-    public get Weight(): number {return this.weight!;}
-    public get Height(): number {return this.height!;}
-    public get Width(): number {return this.width!;}
-    public get Lenght(): number {return this.lenght!;}
+    public get Name():string {return this.name!;};
+    public get Weight(): Weight {return this.weight!;};
+    public get Height(): number {return this.height!;};
+    public get Width(): number {return this.width!;};
+    public get Lenght(): number {return this.lenght!;};
+    public get Durability():number {return this.durability;};
 
     public set Weight(newWeight: Weight) {
         this.weight = newWeight;
@@ -65,7 +68,7 @@ class Article implements Area{
 class Space implements GetObj {
     protected isNull: boolean = true;
     protected objs: Article[] = []; 
-    protected capacity: number = 999999; 
+    protected capacity: number = Infinity; 
     protected fullsCap: number = 0;
 
     constructor() {}
@@ -100,7 +103,7 @@ function yoket(a:any):void{
     a = null;
 }
 
-abstract class CubicArea extends Space implements GetObj{
+abstract class CubicAreaC extends Space implements GetObj{
     protected abstract isNull: boolean;
     protected abstract objs: Article[];
     protected abstract capacity: number;
@@ -110,7 +113,7 @@ abstract class CubicArea extends Space implements GetObj{
     abstract getObj(obj: Article):string;
 }
 
-abstract class Room extends CubicArea {
+abstract class RoomC extends CubicAreaC {
     protected abstract isNull: boolean;
     protected abstract objs: Article[];
     protected abstract capacity: number;
@@ -358,13 +361,17 @@ class Food extends Article {
     protected neliefPoint: HungPoint;
     protected argums: ArguFood;
 
-    constructor(name: string, weight: Weight,width:cm,height:cm,lenght:cm,neliefPoint: HungPoint, argum: ArguFood) {
-        super(name, weight,width,height,lenght); 
+    constructor(name: string, weight: Weight,width:number,height:number,lenght:number,neliefPoint: HungPoint, argum: ArguFood) {
+        super(0,name, weight,width,height,lenght); 
         this.neliefPoint = neliefPoint;
         this.argums = argum;
     }  
+
+    public get Argums(){
+        return this.argums
+    }
     
-    public get NeliefPoint(): number {   
+    public get NeliefPoint(): HungPoint {   
         return this.neliefPoint;
     }
 
@@ -383,7 +390,7 @@ class Beverage extends Article {
     protected argums: ArguBeverage;
 
     constructor(name: string, argu: ArguBeverage, neliefPoint: HungPoint) {
-        super(name);
+        super(0,name);
         this.neliefPoint = neliefPoint;
         this.argums = argu;
     }
@@ -412,60 +419,64 @@ class Foots{
 
 // TODO : Ya sıra ekliceksin ya da başka bişi.
 
-class Hand{
-    private name:string;
+class Hand {
+    private name: string;
     private strong: number;
     private isNull: boolean;
-    private _inTheObject: Article  | null;
+    private _inTheObject: Article | null;
+    private durability: number = 1;
 
-    constructor(name:string,strong: number) {
-        this.name = name
+    constructor(name: string, strong: number) {
+        this.name = name;
         this.strong = strong;
         this.isNull = true;
         this._inTheObject = null;
     }
-    
-    public get Name() : string {
+
+    public get Name(): string {
         return this.name;
     }
 
-    public get(obj: Article,IsTHO:boolean=false): string {
+    public get inTheObject(): Article | null {
+        return this._inTheObject;
+    }
+
+    public get Strong(): number {
+        return this.strong;
+    }
+
+    public get Durability(): number {
+        return this.durability;
+    }
+
+    public get(obj: Article, IsTHO: boolean = false): string {
         if (this.isNull) {
-            if(IsTHO){
-                if(obj.Height == undefined && obj.Lenght == undefined && obj.Width == undefined){
-                    if(obj.Weight > this.Strong*2){
-                        return `bu ${obj.Name} objesini taşıyamazsın`
-                    }else{
-                        this.isNull = false;
-                        this._inTheObject = obj;
-                        return `${obj.Name} objesi ellerinde `
-                    }
-                }else{
-                    if(obj.Height > 200 && obj.Lenght > 50 && obj.Width > 50 && obj.Weight > this.strong*2){
-                        return `iki elle bile ${obj.Name} taşıyamazsın`
-                    }else{
-                        this.isNull = false;
-                        this._inTheObject = obj;
-                        return `${obj.Name} objesi ellerinde `
-                    }
+            if (IsTHO) {
+                if (!obj.Height && !obj.Lenght && !obj.Width) {
+                    if (obj.Weight > this.Strong * 2) return `bu ${obj.Name} objesini taşıyamazsın`;
+                    this.isNull = false;
+                    this._inTheObject = obj;
+                    return `${obj.Name} objesi ellerinde`;
+                } else {
+                    if (obj.Height > 200 && obj.Lenght > 50 && obj.Width > 50 && obj.Weight > this.strong * 2) 
+                        return `iki elle bile ${obj.Name} taşıyamazsın`;
+                    this.isNull = false;
+                    this._inTheObject = obj;
+                    return `${obj.Name} objesi ellerinde`;
                 }
-            }else{
-                if(obj.Height == undefined && obj.Lenght == undefined && obj.Width == undefined){
-                    if(obj.Weight > this.Strong){
-                        return `bu ${obj.Name} objesini taşıyamazsın`
-                    }else{
+            } else {
+                if (!obj.Height && !obj.Lenght && !obj.Width) {
+                    if (obj.Weight > this.Strong) return `bu ${obj.Name} objesini taşıyamazsın`;
+                    this.isNull = false;
+                    this._inTheObject = obj;
+                    return `bu ${obj.Name} objesini aldın.`;
+                } else {
+                    if (obj.Weight < this.strong && obj.Height < 180) {
                         this.isNull = false;
                         this._inTheObject = obj;
-                        return `bu ${obj.Name} objesini aldın.`
-                    }
-                }else{
-                    if(obj.Weight < this.strong && obj.Height < 180) { // matematik lazım mesela : height * weight
-                        this.isNull = false;
-                        this._inTheObject = obj;
-                        return `bu ${obj.Name} objesini aldın.`
-                    }
-                    else {
-                        return `bu ${obj.Name} objesini taşıyamazsın`
+                        return `bu ${obj.Name} objesini aldın.`;
+                    } else {
+                        return `bu ${obj.Name} objesini taşıyamazsın`;
                     }
                 }
             }
@@ -473,52 +484,50 @@ class Hand{
             return "elin dolu";
         }
     }
-        
 
     public give(obj: Article, _where: Space | PersonC | Stomach): string {
         if (!this.isNull) {
             if (_where != null) {
                 if (_where instanceof Space) {
-                    let cek = _where.getObj(obj);
-                    if(cek == obj.Name+" added on the "+_where.constructor.name){
+                    const result = _where.getObj(obj);
+                    if (result === `${obj.Name} added on the ${_where.constructor.name}`) {
                         this._inTheObject = null;
-                        this.isNull=true;
-                        return cek;
-                    }else {
-                        return cek;
+                        this.isNull = true;
+                        return result;
+                    } else {
+                        return result;
                     }
                 } else if (_where instanceof PersonC) {
-                    let target:hands;
+                    let target: hands;
                     let Lcek = _where.IsHandFull(true);
-                    let Rcek = _where.IsHandFull(false,true);
-                    if (Rcek == "Right hand is empty" && Lcek == "Left hand is empty"){target = "allHands"}
-                    else if(Lcek == "Left hand is empty"){target = "left"}
-                    else if(Rcek == "Right hand is empty"){target = "right"}
-                    else{return "all hands are full. From : Person"}
+                    let Rcek = _where.IsHandFull(false, true);
+                    if (Rcek == "Right hand is empty" && Lcek == "Left hand is empty") target = "allHands";
+                    else if (Lcek == "Left hand is empty") target = "left";
+                    else if (Rcek == "Right hand is empty") target = "right";
+                    else return "all hands are full. From : Person";
 
-                    let cek = _where.getObject(obj,target)
-                    if(cek ==  `bu ${obj.Name} objesini aldın.`){
+                    const result = _where.getObject(obj, target);
+                    if (result == `bu ${obj.Name} objesini aldın.`) {
                         this._inTheObject = null;
-                        this.isNull=true;
-                        return "from karşı el:" + cek;   
-                    }else{
-                        return "from karşı el:" + cek;
+                        this.isNull = true;
+                        return "from karşı el:" + result;
+                    } else {
+                        return "from karşı el:" + result;
                     }
-                     
-                }else if (_where instanceof Stomach){
-                    if(obj instanceof Food){
-                        let cek = _where.get(obj);
-                        if(cek == "eated "+obj.Name){
+                } else if (_where instanceof Stomach) {
+                    if (obj instanceof Food) {
+                        const result = _where.get(obj);
+                        if (result == "eated " + obj.Name) {
                             this._inTheObject = null;
-                            this.isNull=true;
-                            return cek;
-                        }else{
-                            return cek;
+                            this.isNull = true;
+                            return result;
+                        } else {
+                            return result;
                         }
-                    }else{
-                        return obj.Name+" objesini yediremezsin."
+                    } else {
+                        return obj.Name + " objesini yediremezsin.";
                     }
-                }else {
+                } else {
                     return "where type is not Space ,Hand or Stomach";
                 }
             } else {
@@ -529,21 +538,88 @@ class Hand{
             return "Elinde bir şey yok.";
         }
     }
+
+    private easySmash(obj: Article | Food, num: number, smashType: "Horizontal" | "Vertical") {
+        let objs: (Article | Food)[] = [];
+        let i = 1;
+        while (i <= num) {
+            let newObj: Article | Food;
+            const isArticle = (obj as Article).Durability !== undefined;
+            const isFood = (obj as Food).NeliefPoint !== undefined;
+            if (isArticle) {
+                if (smashType === "Horizontal") {
+                    newObj = new Article(
+                        obj.Durability,
+                        obj.Name,
+                        obj.Weight,
+                        obj.Width,
+                        obj.Height,
+                        obj.Lenght / num
+                    );
+                } else {
+                    newObj = new Article(
+                        obj.Durability,
+                        obj.Name,
+                        obj.Weight,
+                        obj.Width,
+                        obj.Height / num,
+                        obj.Lenght
+                    );
+                }
+            } else if (isFood) {
+                const foodObj = obj as Food;
+                if (smashType === "Horizontal") {
+                    newObj = new Food(
+                        foodObj.Name,
+                        foodObj.Weight,
+                        foodObj.Width,
+                        foodObj.Height,
+                        foodObj.Lenght / num,
+                        foodObj.NeliefPoint,
+                        foodObj.Argums
+                    );
+                } else {
+                    newObj = new Food(
+                        foodObj.Name,
+                        foodObj.Weight,
+                        foodObj.Width,
+                        foodObj.Height / num,
+                        foodObj.Lenght,
+                        foodObj.NeliefPoint,
+                        foodObj.Argums
+                    );
+                }
+            } else {
+                throw new Error("Unsupported object type.");
+            }
     
-    public get inTheObject() : Article|null {
-        return this._inTheObject;
+            objs.push(newObj);
+            i++;
+        }
+        return objs;
     }
     
-
-    public get Strong(): number {
-        return this.strong;
+    public smash(obj: Article | Food, smashType: "horizontal" | "vertical", howMuch: number) {
+        if (howMuch <= 1) return "1'e bölemezsin. Min 2 eş parça olabilir";
+        if (obj !== this._inTheObject) return "eşyayı eline almadan parçalayamazsın.";
+    
+        if (howMuch > obj.area()) return `Bu objeyi ${howMuch} parçaya bölemezsin`;
+        if (obj.Durability >= this.Durability) return "Bu eşyayı parçalayabilecek kadar güçlü değilsin.";
+    
+        const smashedParts = this.easySmash(obj, howMuch, smashType === "horizontal" ? "Horizontal" : "Vertical");
+    
+        this.isNull = true;
+        this._inTheObject = null;
+    
+        smashedParts.forEach(part => this.get(part));
+        return `${howMuch} parçaya ayrıldı.`;
     }
-
+    
     public IsNull(): boolean {
         return this.isNull;
     }
-
 }
+
 
 export class Stomach implements stomachT{
     private area = 100;

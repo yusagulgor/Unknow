@@ -47,7 +47,7 @@ class Person extends PersonC {
         job: Jobs = null,
         CompanyName: string | undefined = undefined
     ) {
-        super(name, weight, 10, height, 6);
+        super(3,name, weight, 10, height, 6);
         this.name = name;
         this.age = age;
         this.job = job;
@@ -62,7 +62,6 @@ class Person extends PersonC {
         }
 
         if (job == null && CompanyName == null) {
-            // İş ve şirket adı yoksa devam
         } else {
             if (job != null && CompanyName == null) {
                 throw new Error("İşin varsa şirket ismi olmalı");
@@ -98,26 +97,26 @@ class Person extends PersonC {
     private initMemory(): void {
         
     }
-
-    public nulluk(left:boolean,right:boolean):any{
-        if(left){return this.leftHand.IsNull()}
-        if(right){return this.rightHand.IsNull()}
-        else {return "sa ";};
-    }
-
     
     public get Gender() : string {
         return this.gender; 
     }
     
+    // ? For testing 
 
-    public get LeftHand(): Hand {
-        return this.leftHand;
-    }
+    // public nulluk(left:boolean,right:boolean):any{
+    //     if(left){return this.leftHand.IsNull()}
+    //     if(right){return this.rightHand.IsNull()}
+    //     else {return "sa ";};
+    // }
 
-    public get RightHand(): Hand {
-        return this.rightHand;
-    }
+    // public get LeftHand(): Hand {
+    //     return this.leftHand;
+    // }
+
+    // public get RightHand(): Hand {
+    //     return this.rightHand;
+    // }
 
     public get BrainValues(): BinBrainCells {
         return this.binbrain.MemoryValues;
@@ -298,10 +297,9 @@ class Doctor extends Person implements DoctorT {
     private readonly companyType: CompanyType = "Hospital";
 
     constructor(name: string, age: Age, weight: PeopleWeight, height: Height,handStrength:Strength,gender: Gender, branch: DocBranchs, companyName: string) {
-        super(name, age, weight, height,handStrength,gender, "Doctor");
+        super(name, age, weight, height,handStrength,gender, "Doctor",companyName);
         this.job = "Doctor";
         this.branch = branch;
-        this.companyName = companyName;
     }
 
     public get Branch(): DocBranchs { return this.branch; }
@@ -320,9 +318,8 @@ class Engineer extends Person implements EngineerT {
     private readonly companyType: CompanyType = "Technology";
 
     constructor(name: string, age: Age, weight: PeopleWeight, height: Height,handStrength:Strength,gender: Gender, companyName: string, department: EngineerDepartment) {
-        super(name, age, weight, height, handStrength,gender, "Engineer");
+        super(name, age, weight, height, handStrength,gender, "Engineer",companyName);
         this.job = "Engineer";
-        this.companyName = companyName;
         this.department = department;
     }
 
@@ -387,13 +384,12 @@ class Teacher extends Person implements TeacherT {
     private readonly companyType: CompanyType = "School";
 
     constructor(name: string, age: Age, weight: PeopleWeight, height: Height,handStrength:Strength ,gender: Gender, department: TeacherDepartment, companyName: string) {
-        super(name, age, weight, height,handStrength,gender, "Teacher");
+        super(name, age, weight, height,handStrength,gender, "Teacher",companyName);
         this.name = name;
         this.age = age;
         this.gender = gender;
         this.job = "Teacher";
         this.department = department;
-        this.companyName = companyName;
     }
 
     public get Department(): TeacherDepartment {return this.department;}
@@ -407,12 +403,11 @@ class Manager extends Person implements ManagerT {
     private readonly companyType: CompanyType;
 
     constructor(name: string, age: Age, weight: PeopleWeight, height: Height,handStrength:Strength,gender: Gender, companyName: string, companyType: CompanyType) {
-        super(name, age, weight, height, handStrength,gender, "Manager");
+        super(name, age, weight, height, handStrength,gender, "Manager",companyName);
         this.name = name;
         this.age = age;
         this.gender = gender;
         this.job = "Manager";
-        this.companyName = companyName;
         this.companyType = companyType;
     }
 
