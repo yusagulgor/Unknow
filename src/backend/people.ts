@@ -19,7 +19,8 @@ import {
     SchoolType,
     EngineerDepartment,
     Strength,
-    hands
+    hands,
+    OneLineCheck
  } from './types/allTypes';
 
 import { Hand,Article, BinBrain, Space, Decoder, Food, Beverage , PersonC, Stomach } from './fal';
@@ -184,10 +185,10 @@ class Person extends PersonC {
             return this.AreBothHandsFull ? "All hands are full" : "not: all hands are not full";
         }
         if (left) {
-            return this.leftHand.IsNull() ? "Left hand is empty" : this.leftHand.inTheObject?.Name +" in the left Hand";
+            return this.leftHand.IsNull() ? "Left hand is empty" : Array.isArray(this.leftHand.inTheObject)?"elinde birden çok eşya var": this.leftHand.inTheObject?.Name +" in the left Hand";
         }
         if (right) {
-            return this.rightHand.IsNull() ? "Right hand is empty" : this.rightHand.inTheObject?.Name +" in the right Hand";
+            return this.rightHand.IsNull() ? "Right hand is empty" : Array.isArray(this.rightHand.inTheObject)?"elinde birden çok eşya var": this.rightHand.inTheObject?.Name +" in the right Hand";
         }
         return "Invalid hand selection";
     }
@@ -255,7 +256,13 @@ class Person extends PersonC {
         }else{
             return "unknown error in the give func"
         }
-    }     
+    }
+    
+    public smashTObj(object: Article,smashType:"Horizontal"|"Vertical",howMuch:number,hand:"left"|"right"):string{
+        let usHand=this.setHand(hand);
+        let useHand = usHand as Hand;
+        return useHand.smash(object,smashType,howMuch);
+    }
     
 
     public eat(food: Food, whand: "right"|"left"): string {

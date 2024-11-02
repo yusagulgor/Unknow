@@ -423,7 +423,7 @@ class Hand {
     private name: string;
     private strong: number;
     private isNull: boolean;
-    private _inTheObject: Article | null;
+    private _inTheObject: Article | Article[] | null;
     private durability: number = 1;
 
     constructor(name: string, strong: number) {
@@ -437,7 +437,7 @@ class Hand {
         return this.name;
     }
 
-    public get inTheObject(): Article | null {
+    public get inTheObject(): Article | Article[] | null {
         return this._inTheObject;
     }
 
@@ -599,14 +599,14 @@ class Hand {
         return objs;
     }
     
-    public smash(obj: Article | Food, smashType: "horizontal" | "vertical", howMuch: number) {
-        if (howMuch <= 1) return "1'e bölemezsin. Min 2 eş parça olabilir";
+    public smash(obj: Article | Food, smashType: "Horizontal" | "Vertical", howMuch: number) {
         if (obj !== this._inTheObject) return "eşyayı eline almadan parçalayamazsın.";
+        if (howMuch <= 1) return "1'e bölemezsin. Min 2 eş parça olabilir";
     
-        if (howMuch > obj.area()) return `Bu objeyi ${howMuch} parçaya bölemezsin`;
+        if (howMuch > 4) return `Bu objeyi ${howMuch} parçaya bölemezsin`;
         if (obj.Durability >= this.Durability) return "Bu eşyayı parçalayabilecek kadar güçlü değilsin.";
     
-        const smashedParts = this.easySmash(obj, howMuch, smashType === "horizontal" ? "Horizontal" : "Vertical");
+        const smashedParts = this.easySmash(obj, howMuch, smashType );
     
         this.isNull = true;
         this._inTheObject = null;
