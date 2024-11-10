@@ -24,7 +24,8 @@ import {
     bcv,
     hands,
     stomachT,
-    throwError
+    throwError,
+    OneLineCheck
     } from "./types/allTypes";
 
 class Article implements Area{
@@ -614,6 +615,10 @@ class Hand {
         smashedParts.forEach(part => this.get(part));
         return `${howMuch} parçaya ayrıldı.`;
     }
+
+    // public share(obj:Article[],num:number):string{
+    //     OneLineCheck(num == 1,"num 1 olucaksa yürü git give kullan")
+    // }
     
     public IsNull(): boolean {
         return this.isNull;

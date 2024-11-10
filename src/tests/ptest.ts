@@ -1,3 +1,12 @@
+
+
+// ! Data log
+
+
+import { log } from "console";
+import {Food, Person, Space} from "../backend"
+import { ArguFood } from "../backend/types/allTypes"
+
 let testingDate:string = "2.11.24"
 let testingStatus:string = "unknown"
 
@@ -10,13 +19,6 @@ function finish(){
     log("Test Tarihi:"+testingDate);
     log("Test durumu:"+testingStatus);
 }
-
-// ! Data log
-
-
-import { log } from "console";
-import {Food, Person, Space} from "../backend"
-import { ArguFood } from "../backend/types/allTypes"
 
 const space = new Space();
 
@@ -94,6 +96,8 @@ log(person.getObject(apple,"left"))
 log(person.smashTObj(apple,"Horizontal",2,"left"))
 log("sol el durumu:"+person.IsHandFull(true))
 log(person.whatITheHand(true));
+
+testingStatus = "smash is not yet"
 
 finish()
 
