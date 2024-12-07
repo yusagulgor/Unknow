@@ -1,6 +1,6 @@
 // ? All Types
 
-import {Hand,Article,Space, Brain, Food, Beverage, BinBrain, Stomach} from "../fal"
+import {Article,Space, Brain, Food, BinBrain, Stomach} from "../fal"
 
 import { Doctor, 
     Engineer, 
@@ -12,7 +12,7 @@ import { Doctor,
 export let throwError = (errorMsg: string): never => {throw new Error(errorMsg);};     
 export let OneLineCheck = (control:boolean,ret:string)=>{if(control) return ret};
 
-console.log(OneLineCheck("lale" =="lale","true"))
+// console.log(OneLineCheck("lale" =="lale","true"))
 // ? Binary Types     
 
 export type memory = 0|1;
@@ -65,6 +65,14 @@ type ArguBeverage = {
     forWhoDrinkable?: {
         [key in fhd]?: boolean;  
     };
+}
+
+export type size = "XS"|"S"|"M"|"L"|"XL"|"XXL";
+export type fw = "had"|"face"|"neck"|"body"|"foots"|"foot"|"hand";
+export type ClothType = "jumper"|"shirt"|"trousers"|"accessory"|"glove";
+export interface Wearable{
+    readonly forWhere:fw;
+    wear();
 }
 
 export interface stomachT{
@@ -156,7 +164,7 @@ interface PersonT{
     giveObject(obj:Article,where:Space|Person|Stomach,whand:hands):string;
     IsHandFull(left:boolean,right:boolean):string|undefined;
     eat(food:Food,whand:hands):string;
-    drink(beverage:Beverage):string;
+    // drink(beverage:Beverage):string;
 }
 
 

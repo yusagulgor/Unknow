@@ -8,7 +8,6 @@ import {
     ManagerT,
     Weight,
     Height,
-    BinBrainCells,
     PeopleWeight,
     Age,
     Gender,
@@ -23,7 +22,7 @@ import {
     OneLineCheck
  } from './types/allTypes';
 
-import { Hand,Article, BinBrain, Space, Decoder, Food, Beverage , PersonC, Stomach } from './fal';
+import { Hand,Article, Space, Food , PersonC, Stomach } from './fal';
 
 class Person extends PersonC {
     protected isDead: boolean = false;
@@ -33,9 +32,9 @@ class Person extends PersonC {
     protected rightHand: Hand;
     protected gender: Gender;
     protected job: Jobs;
-    protected binbrain: BinBrain = new BinBrain();
+    // protected binbrain: BinBrain ;
     protected companyName: string | undefined;
-    protected stomach: Stomach = new Stomach();
+    protected stomach: Stomach ;
 
 
     constructor(
@@ -73,27 +72,27 @@ class Person extends PersonC {
                 this.companyName = CompanyName;
             }
         }
-
-        this.binbrain = new BinBrain();
+        this.stomach = new Stomach();
+        // this.binbrain = new BinBrain();
     }
 
-    private BinInitMemory(): void {
-        let dname = Decoder.retToDecode(this.name);
-        let dage = Decoder.retToDecode(this.age);
-        let dweight = Decoder.retToDecode(this.weight!);
-        let dgender = Decoder.retToDecode(this.gender, true);
-        let dheight = Decoder.retToDecode(this.height!, true);
-        let djob = Decoder.retToDecode(this.job!);
+    // private BinInitMemory(): void {
+    //     let dname = Decoder.retToDecode(this.name);
+    //     let dage = Decoder.retToDecode(this.age);
+    //     let dweight = Decoder.retToDecode(this.weight!);
+    //     let dgender = Decoder.retToDecode(this.gender, true);
+    //     let dheight = Decoder.retToDecode(this.height!, true);
+    //     let djob = Decoder.retToDecode(this.job!);
 
-        this.binbrain.add("Name", dname);
-        this.binbrain.add("Age", dage);
-        this.binbrain.add("Weight", dweight);
-        this.binbrain.add("Gender", dgender);
-        this.binbrain.add("Height", dheight);
-        this.binbrain.add("Job", djob);
-        this.binbrain.add("leftHand", 0);
-        this.binbrain.add("rightHand", 0);
-    }
+    //     this.binbrain.add("Name", dname);
+    //     this.binbrain.add("Age", dage);
+    //     this.binbrain.add("Weight", dweight);
+    //     this.binbrain.add("Gender", dgender);
+    //     this.binbrain.add("Height", dheight);
+    //     this.binbrain.add("Job", djob);
+    //     this.binbrain.add("leftHand", 0);
+    //     this.binbrain.add("rightHand", 0);
+    // }
 
     private initMemory(): void {
         
@@ -119,9 +118,9 @@ class Person extends PersonC {
     //     return this.rightHand;
     // }
 
-    public get BrainValues(): BinBrainCells {
-        return this.binbrain.MemoryValues;
-    }
+    // public get BrainValues(): BinBrainCells {
+    //     return this.binbrain.MemoryValues;
+    // }
 
     public set Weight(newWeight: Weight) {
         this.weight = newWeight;
@@ -247,6 +246,10 @@ class Person extends PersonC {
     }
 
     public giveObject(object: Article, where: Space | Person, hand:hands): string {
+        if (this.leftHand.inTheObject == this.rightHand.inTheObject){
+            console.log("objeyi tek elle taşıyamayacağın için iki elinden birden düştü.");
+            return this.giveWithBothHands(object,where);
+        }
         let cek= this.setHand(hand);
         if(cek == "all"){
             return this.giveWithBothHands(object,where)
@@ -264,7 +267,6 @@ class Person extends PersonC {
         return useHand.smash(object,smashType,howMuch);
     }
     
-
     public eat(food: Food, whand: "right"|"left"): string {
         let cek = this.setHand(whand);
         if(cek instanceof Hand){
@@ -284,9 +286,9 @@ class Person extends PersonC {
         }
     }
 
-    public drink(beverage: Beverage): string {
-        return "not yet";
-    }
+    // public drink(beverage: Beverage): string {
+    //     return "not yet";
+    // }
 
     public override area(): number {
         return this.width! * this.height! * this.lenght!;
